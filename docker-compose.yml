@@ -1,0 +1,32 @@
+version: '3'
+services:
+    mysql:
+        image:  mysql:5
+        restart: always
+        ports:
+            - "3306:3306"
+        volumes:
+            - "./data/db:/var/lib/mysql"
+            - "./dockerfiles/db/my.cnf:/etc/my.cnf"
+        environment:
+            - MYSQL_ROOT_PASSWORD=secret
+            - MYSQL_DATABASE=x_server_sql
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=secret
+    nginx:
+        image: nginx:latest
+        ports:
+            - "1909:1909"
+        restart: always
+        networks: 
+            - dev
+    tornado_dev:
+        build: ./dockerfiles
+        depends_on:
+            - mysql 
+        restart: always
+        ports: 
+            - "8888:8888"
+networks:
+    dev:
+        driver: bridge
